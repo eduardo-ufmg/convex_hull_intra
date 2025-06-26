@@ -78,4 +78,4 @@ def convex_hull_intra(Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: i
     if std_volume < 1e-9:
         return 0.0
 
-    return float(mean_volume / std_volume)
+    return float(mean_volume / std_volume) * factor_h * factor_k
