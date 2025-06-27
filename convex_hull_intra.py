@@ -1,7 +1,10 @@
 import numpy as np
 from scipy.spatial import ConvexHull
 
-def convex_hull_intra(Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: int) -> float:
+
+def convex_hull_intra(
+    Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: int
+) -> float:
     """
     Computes the average n-volume of convex hulls for each class, normalized
     by the standard deviation of the volumes.
@@ -54,7 +57,7 @@ def convex_hull_intra(Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: i
         try:
             # `qhull_options='QJ'` joggles the input to prevent precision issues
             # that can arise with co-planar/degenerate points, increasing robustness.
-            hull = ConvexHull(points, qhull_options='QJ')
+            hull = ConvexHull(points, qhull_options="QJ")
             class_volumes.append(hull.volume)
         except Exception:
             # A QhullError typically signifies that the points are degenerate
@@ -65,7 +68,7 @@ def convex_hull_intra(Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: i
     # --- 3. Calculate the Final Metric ---
     if not class_volumes:
         return 0.0
-        
+
     volumes_array = np.array(class_volumes, dtype=np.float64)
 
     # Calculate mean and standard deviation of the collected volumes.
