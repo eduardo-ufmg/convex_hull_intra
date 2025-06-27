@@ -8,8 +8,8 @@ def convex_hull_intra(Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: i
 
     For each class, the function treats the corresponding rows in Q as points in
     an N-dimensional space. It computes the n-volume of the convex hull for
-    each class's points. It then returns the average of these volumes divided
-    by their standard deviation.
+    each class's points. It then returns the average of these volumes minus
+    their standard deviation.
 
     Parameters:
         Q (np.ndarray): An (M, N) similarity matrix where M is the number of samples
@@ -23,7 +23,7 @@ def convex_hull_intra(Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: i
                         the sparse RBF kernel.
 
     Returns:
-        float: The average of the n-volumes divided by their standard deviation.
+        float: The average of the n-volumes minus their standard deviation.
                Returns 0.0 if the standard deviation is zero (e.g., if there's
                only one class or all classes have identical volumes) or in
                case of invalid input.
@@ -72,10 +72,4 @@ def convex_hull_intra(Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: i
     mean_volume = np.mean(volumes_array)
     std_volume = np.std(volumes_array)
 
-    # To avoid division by zero, we check if the standard deviation is negligible.
-    # This occurs if all classes have nearly identical hull volumes. In this case,
-    # the metric is undefined or can be considered zero.
-    if std_volume < 1e-9:
-        return 0.0
-
-    return float(mean_volume / std_volume) * factor_h * factor_k
+    return float(mean_volume - std_volume) * factor_h * factor_k
