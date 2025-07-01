@@ -75,4 +75,4 @@ def convex_hull_intra(
     mean_volume = np.mean(volumes_array)
     std_volume = np.std(volumes_array)
 
-    return float(mean_volume - std_volume) * factor_h * factor_k
+    return float(mean_volume - std_volume)
