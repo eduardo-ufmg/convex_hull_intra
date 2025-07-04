@@ -3,8 +3,13 @@ from scipy.spatial import ConvexHull
 
 from paramhandling.paramhandler import parcheck, get_nparrays, get_classes
 
+
 def convex_hull_intra(
-    Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: float, classes: np.ndarray | None = None
+    Q: np.ndarray,
+    y: np.ndarray,
+    factor_h: float,
+    factor_k: float,
+    classes: np.ndarray | None = None,
 ) -> float:
     """
     Computes the average n-volume of convex hulls for each class, normalized
