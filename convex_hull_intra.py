@@ -1,9 +1,10 @@
 import numpy as np
 from scipy.spatial import ConvexHull
 
+from paramhandling.paramhandler import parcheck, get_nparrays, get_classes
 
 def convex_hull_intra(
-    Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: int
+    Q: np.ndarray, y: np.ndarray, factor_h: float, factor_k: float, classes: np.ndarray | None = None
 ) -> float:
     """
     Computes the average n-volume of convex hulls for each class, normalized
@@ -22,8 +23,11 @@ def convex_hull_intra(
         y (np.ndarray): An (M,) array of labels, where y[i] is the integer class
                         label for sample i.
         factor_h (float): A scaled factor from the RBF kernel bandwidth parameter.
-        factor_k (int): A scaled factor from the number of nearest neighbors used in
+        factor_k (float): A scaled factor from the number of nearest neighbors used in
                         the sparse RBF kernel.
+        classes (np.ndarray | None): The complete list of unique class labels. If provided,
+                                     it's used to define the class space. If None,
+                                     classes are inferred from y.
 
     Returns:
         float: The average of the n-volumes minus their standard deviation.
@@ -31,16 +35,10 @@ def convex_hull_intra(
                only one class or all classes have identical volumes) or in
                case of invalid input.
     """
-    # --- 1. Initial Setup and Validation ---
-    if Q.ndim != 2 or y.ndim != 1 or Q.shape[0] != y.shape[0] or Q.shape[0] == 0:
-        return 0.0
 
-    num_dimensions = Q.shape[1]
-    unique_labels = np.unique(y)
-
-    # The metric requires at least two classes to have a meaningful standard deviation.
-    if len(unique_labels) < 2:
-        return 0.0
+    parcheck(Q, y, factor_h, factor_k, classes)
+    Q, y = get_nparrays(Q, y)
+    unique_labels, n_classes = get_classes(y, classes)
 
     # --- 2. Compute Convex Hull Volume for Each Class ---
     class_volumes = []
@@ -50,7 +48,7 @@ def convex_hull_intra(
 
         # An N-dimensional convex hull requires at least N+1 points to have volume.
         # If a class has fewer points, its N-dimensional volume is zero.
-        if points.shape[0] < num_dimensions + 1:
+        if points.shape[0] < n_classes + 1:
             class_volumes.append(0.0)
             continue
 
